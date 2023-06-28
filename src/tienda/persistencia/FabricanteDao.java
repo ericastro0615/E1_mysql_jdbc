@@ -4,8 +4,11 @@ import tienda.entidades.Fabricante;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FabricanteDao extends DAO{
+
     public void guardar(Fabricante auxFabricante) throws Exception {
         try {
             if (auxFabricante == null) {
@@ -59,7 +62,7 @@ public class FabricanteDao extends DAO{
             }
             return aux;
 
-        } catch (SQLException | Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new Exception("ERROR AL OBTENER Fabricante");
         } finally {
@@ -67,46 +70,75 @@ public class FabricanteDao extends DAO{
         }
     }
 
-    public void eliminarauxFabricante(String correo) throws Exception {
+    public void eliminarPorCodFabricante(Integer codigo) throws Exception {
         try {
             // SENTENCIA SQL DE ELIMINACIÓN
-            String sql = "DELETE FROM auxFabricante WHERE correo = '" + correo + "';";
-
-            // SE MUESTRA LA CADENA RESULTANTE
-            System.out.println(sql);
-            System.out.println();
-
+            String sql = "DELETE FROM fabricante WHERE nombre = '" + codigo + "';";
             insertarModificarEliminar(sql);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new Exception("ERROR AL ELIMINAR auxFabricante");
+            throw new Exception("ERROR AL ELIMINAR Fabricante");
         }
     }
 
-    public List<auxFabricante> obtenerauxFabricantes() throws Exception {
+    public List<Fabricante> obtenerFabricantes() throws Exception {
         try {
-            // SENTENCIA SQL DE CONSULTA
-            String sql = "SELECT * FROM auxFabricante"; // "SELECT correo, nombre, apellido FROM auxFabricante";
+            // SENTENCIA SQL DE CONSULTA, trae todo
+            String sql = "SELECT * FROM fabricante"; // "SELECT correo, nombre, apellido FROM auxFabricante";
 
             consultarBase(sql);
-
-            List<auxFabricante> auxFabricantes = new ArrayList<>();
-            auxFabricante auxFabricante = null;
+            //se creaa un obj Fabricante
+            List<Fabricante> auxFabricanteLista = new ArrayList<>();
+            Fabricante auxFabObj = null;
 
             while (resultado.next()) {
-                auxFabricante = new auxFabricante();
+                auxFabObj = new Fabricante();
 
-                auxFabricante.setCorreo(resultado.getString(1));
-                auxFabricante.setNombre(resultado.getString(2));
-                auxFabricante.setApellido(resultado.getString(3));
+                auxFabObj.setCodigo(resultado.getInt(1));
+                auxFabObj.setNombre(resultado.getString(2));
 
-                auxFabricantes.add(auxFabricante);
+                auxFabricanteLista.add(auxFabObj);
             }
 
-            return auxFabricantes;
-        } catch (SQLException | Exception e) {
+            return auxFabricanteLista;
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
-            throw new Exception("ERROR AL OBTENER auxFabricanteS");
+            throw new Exception("ERROR AL cargar drivers");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new Exception("ERROR AL OBTENER FabricanteS");
+        } finally {
+            desconectarBase();
+        }
+    }
+
+    public List <Fabricante> obtenerFabricanteXnombre (String fab) throws Exception {
+        try {
+            // SENTENCIA SQL DE CONSULTA, trae todo
+            String sql = "SELECT * FROM fabricante " +
+                    "WHERE nombre = '%" + fab + " ';" ; // "SELECT correo, nombre, apellido FROM auxFabricante";
+
+            consultarBase(sql);
+            //se creaa un obj Fabricante
+            List<Fabricante> auxFabricanteLista = new ArrayList<>();
+            Fabricante auxFabObj = null;
+
+            while (resultado.next()) {
+                auxFabObj = new Fabricante();
+
+                auxFabObj.setCodigo(resultado.getInt(1));
+                auxFabObj.setNombre(resultado.getString(2));
+
+                auxFabricanteLista.add(auxFabObj);
+            }
+
+            return auxFabricanteLista;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw new Exception("ERROR AL cargar drivers");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new Exception("ERROR AL OBTENER FabricanteS");
         } finally {
             desconectarBase();
         }
